@@ -13,10 +13,13 @@ router.get('/users-products', authMiddleware, userController.getUsersProductsAgg
 
 
 // admin routes
+router.get('/all', [authMiddleware, adminAuth], userController.getUsersList);
+router.get("/search", [authMiddleware, adminAuth],userController.searchUsers)
+
+
 router.put("/:id/activate", [authMiddleware, adminAuth, isIdValid, checkUserExists], userController.activateUser);
 router.put("/:id/deactivate", [authMiddleware, adminAuth, isIdValid, checkUserExists], userController.blockUser);
 router.put("/:id/delete", authMiddleware, adminAuth, isIdValid, checkUserExists, userController.deleteUser)
-router.get('/all', [authMiddleware, adminAuth], userController.getUsersList);
 
 
 

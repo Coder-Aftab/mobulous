@@ -2,18 +2,20 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
+import { CustomError } from '../utils/utils.js';
 
 const userController = {
   signup: async (req, res) => {
     const { firstName, lastName, email, phoneNumber, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ $or: [{ email }, { phoneNumber }] });
 
     if (existingUser) {
-      return res.status(409).json({ message: 'Email already exists' });
+      return res.status(409).json({ message: 'email or phone number already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    
     const newUser = new User({
       firstName,
       lastName,
@@ -104,7 +106,29 @@ const userController = {
     res.status(200).json({ message: 'User deleted successfully' });
   },
 
+  searchUsers: async (req, res) => {
 
+    const query = req.query;
+    const { email = "", phoneNumber = "", firstName = "" } = query;
+    if (!email && !firstName && !phoneNumber) {
+      throw new CustomError("Please provide at least one search parameter", 201)
+    }
+
+    const users = await User.find({
+      $or: [
+        {
+          email: { $regex: email, $options: 'i' },
+          firstName: { $regex: firstName, $options: 'i' },
+          phoneNumber: { $regex: phoneNumber, $options: 'i' },
+        }
+      ]
+    });
+    if (users.length <= 0) {
+      throw new CustomError("No users found", 201)
+    }
+    res.json({ message: "success", users })
+
+  }
 };
 
 export default userController;
