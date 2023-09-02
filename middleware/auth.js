@@ -9,7 +9,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_KEY);
-    req.user = decoded.user; // User ID
+    req.userId = decoded.userId; // User ID
     req.isAdmin = decoded.isAdmin; // isAdmin flag
     next();
   } catch (error) {

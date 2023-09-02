@@ -2,6 +2,8 @@ import dotenv from "dotenv"
 import express from 'express';
 import cors from "cors";
 import morgan from "morgan";
+import 'express-async-errors'; // Import express-async-errors for handling errors
+import globalErrorHandler from "./middleware/globalErrorHandler.js";
 import userRouter from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -22,16 +24,19 @@ app.use(cors())
 app.use(express.json());
 app.use(morgan("tiny"))
 
-app.use("/api/users",userRouter);
+app.use("/api/users", userRouter);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
-app.use("/*",(req, res) =>res.status(404).send("404 Not Found"))
+app.use("/*", (_, res) => res.status(404).send("404 Not Found"))
 
-const PORT=process.env.PORT || 8080;
+app.use(globalErrorHandler);
 
 
-app.use("/",(req,res)=>{
+const PORT = process.env.PORT || 8080;
+
+
+app.use("/", (req, res) => {
     res.send("Hello World")
 })
 
-export const server=app.listen(PORT,()=>console.log(`server listening on port ${PORT}`))
+export const server = app.listen(PORT, () => console.log(`server listening on port ${PORT}`))

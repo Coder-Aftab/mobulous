@@ -5,7 +5,6 @@ import User from '../models/user.js';
 
 const userController = {
   signup: async (req, res) => {
-    try {
       const { firstName, lastName, email, phoneNumber, password } = req.body;
       
       const existingUser = await User.findOne({ email });
@@ -26,13 +25,9 @@ const userController = {
       await newUser.save();
 
       res.status(201).json({ message: 'User created successfully Please wait for verification'});
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred' });
-    }
   },
   
   login: async (req, res) => {
-    try {
       const { email,phoneNumber, password } = req.body;
     
       const user = await User.findOne({
@@ -57,12 +52,8 @@ const userController = {
       res.header("x-auth-token", token);
 
       return res.status(200);
-    } catch (error) {
-      return res.status(500).json({ error: 'An error occurred' });
-    }
   },  getUsersProductsAggregation: async (req, res) => {
-    try {
-      const aggregatedData = await User.aggregate([
+     const aggregatedData = await User.aggregate([
         {
           $lookup: {
             from: 'products',
@@ -84,13 +75,10 @@ const userController = {
       ]);
 
       res.status(200).json(aggregatedData);
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred' });
-    }
+    
   },
 
   createOrder: async (req, res) => {
-    try {
       const { userId, productId } = req.body;
 
       const user = await User.findById(userId);
@@ -112,9 +100,7 @@ const userController = {
       } else {
         res.status(400).json({ message: 'Product out of stock' });
       }
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred' });
-    }
+    
   },
 
 };
