@@ -10,6 +10,10 @@ const orderSchema = new mongoose.Schema({
     enum: ['new', 'accepted', 'rejected'],
     default: 'new',
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
 });
 
 const Order = mongoose.model('Order', orderSchema);

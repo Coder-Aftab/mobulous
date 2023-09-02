@@ -7,6 +7,7 @@ import globalErrorHandler from "./middleware/globalErrorHandler.js";
 import userRouter from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 import DBConnection from './db/index.js';
 // Set up Express app
 
@@ -27,6 +28,8 @@ app.use(morgan("tiny"))
 app.use("/api/users", userRouter);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
+app.use("/api/orders",orderRoutes)
+
 app.use("/*", (_, res) => res.status(404).send("404 Not Found"))
 
 app.use(globalErrorHandler);
