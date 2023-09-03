@@ -9,7 +9,7 @@
     user can access
     POST: /login
     POST: /signup
-    GET: /users-products
+    GET: /users-products ->getAggregations
 
     admin can access
     GET: /all ->getUserList
@@ -17,14 +17,14 @@
 
     PUT: /:id/activate ->activateUser
     PUT: /:id/deactivate ->blockUser
-    PUT: /:id/delete ->deleteUser
+    DELETE: /:id ->deleteUser
 
 ## /products
 
     admin can access
     GET: /all -> getAllProducts
     POST: / ->addProduct
-    GET: /  ->filterProducts
+    GET: /  ->productsBasedOnLocation
 
 ## /orders
 

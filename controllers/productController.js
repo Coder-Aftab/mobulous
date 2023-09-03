@@ -25,7 +25,7 @@ const productController = {
     const products = await Product.find();
     res.status(200).json({ message: "success", products });
   },
-  filteredProducts: async (req, res) => {
+  getProductsBasedOnLocation: async (req, res) => {
     const { lat, lng } = req.query;
 
     // convert lat and lng to decimal
