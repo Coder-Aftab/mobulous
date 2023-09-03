@@ -15,7 +15,7 @@ const authMiddleware = (req, res, next) => {
     req.isActive = decoded.isActive; // isActive flag
     
     if(req.isAdmin) {
-      next();
+      return next();
     }
     if (req.isActive !== "true") {
       return res.status(401).json({ message: 'User is not Active' });
