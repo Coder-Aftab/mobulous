@@ -1,5 +1,6 @@
 import Order from '../models/order.js';
 import Product from '../models/product.js';
+import WareHouse from '../models/warehouse.js';
 import { CustomError } from '../utils/utils.js';
 
 const orderController = {
@@ -7,15 +8,21 @@ const orderController = {
         const { productIds } = req.body;
         const { userId } = req;
 
-        const productsNotInStock = await Product.find({
-            _id: { $in: productIds },
-            stock: { $lte: 0 }, // Find products with quantity less than or equal to 0
+        // Check if products are in stock in the warehouse
+        const productsNotInStock = await WareHouse.find({
+            'products': {
+                $elemMatch: {
+                    'productId': { $in: productIds },
+                    'stock': { $lte: 0 }, // Find products with quantity less than or equal to 0
+                },
+            },
         });
 
-
-
         if (productsNotInStock.length > 0) {
-            return res.status(400).json({ error: 'Some products are out of stock' });
+            const outOfStockProducts = productsNotInStock.map(warehouse => {
+                return warehouse.products.filter(product => product.stock <= 0);
+            }).flat()
+            return res.status(400).json({ error: 'Some products are out of stock', product: outOfStockProducts });
         }
 
         // Create the order
@@ -23,14 +30,15 @@ const orderController = {
         await order.save();
 
         // Update product quantities and mark them as reserved
-        const pd = await Product.updateMany(
-            { _id: { $in: productIds } },
-            { $inc: { stock: -1 } },
-            { new: true }
+        await WareHouse.updateMany(
+            { 'products.productId': { $in: productIds } },
+            { $inc: { 'products.$.stock': -1 } }, // Decrement stock by 1
         );
 
         res.status(201).json({ message: 'Order created successfully', order });
+
     },
+
     getOrder: async (req, res) => {
         const { id } = req.params;
         const order = await Order.findOne({ _id: id, userId: req.userId }).populate('products');
@@ -81,7 +89,7 @@ const orderController = {
         // Fetch new orders with status 'new' and populate products
         const newOrders = await Order.find({ status: 'new' })
             .populate('products');
-            
+
         res.status(200).json(newOrders);
     },
     getAllOrders: async (req, res) => {

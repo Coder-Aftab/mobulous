@@ -28,23 +28,25 @@ const productController = {
   filteredProducts: async (req, res) => {
     const { lat, lng } = req.query;
 
+    // convert lat and lng to decimal
     const convertedLat = parseFloat(lat);
     const convertedLng = parseFloat(lng);
 
-    const radiusInKilometers = 10;
 
-    const warehouses = await WareHouse.find();
+    // now find all the warehouse
+    const warehouses = await WareHouse.find().populate({ path: "products", populate: "productId" });
 
-
+    //create products list
     const productList = new Set();
 
+    // now find all the products in the warehouses that are within 10 km of the user's location
     warehouses.forEach((warehouse) => {
       if (warehouse.location.lat && warehouse.location.lng) {
         const distance = calculateDistance(parseFloat(warehouse.location.lat), parseFloat(warehouse.location.lng), convertedLat, convertedLng)
         if (distance <= 10) {
           warehouse.products.forEach(product => {
             if (product.stock > 0) {
-              productList.add(product.productId);
+              productList.add(product);
             }
           })
         }
@@ -52,10 +54,8 @@ const productController = {
 
     })
 
-    const pd=productList.values()
-    const products = await Product.find({ $or: [{ productId: { $in: productList } }] });
 
-    res.status(200).json({ message: "success", products });
+    res.status(200).json({ message: "success", products: [...productList] });
 
   }
 };

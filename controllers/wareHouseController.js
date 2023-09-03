@@ -31,11 +31,32 @@ const wareHouseController = {
         }
 
         const newStock = stock ? parseInt(stock) : 0;
-        const product = { productId, stock: newStock };
-        const wareHouse = await WareHouse.findByIdAndUpdate(wareHouseId, { $push: { products: product } }, { $new: true });
 
-        res.json({ message: "success", wareHouse });
+        const warehouse = await WareHouse.findOneAndUpdate(
+            {
+                _id: wareHouseId,
+                'products.productId': productId
+            },
+            {
+                $inc: { 'products.$.stock': newStock }
+            },
+            { new: true }
+        );
 
+        if (!warehouse) {
+            // Product not found in the warehouse, add a new product
+            const updatedWarehouse = await WareHouse.findByIdAndUpdate(
+                wareHouseId,
+                {
+                    $push: { products: { productId, stock: newStock } }
+                },
+                { new: true }
+            );
+
+            res.json({ message: "Product added to warehouse", warehouse: updatedWarehouse });
+        } else {
+            res.json({ message: "Product stock updated in warehouse", warehouse });
+        }
     }
 
 }
