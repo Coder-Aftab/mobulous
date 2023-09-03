@@ -1,3 +1,7 @@
+Project Setup Guide
+
+step 1: run yarn start:prod
+
 # Base Path /api
 
 ## /admin
