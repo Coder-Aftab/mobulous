@@ -4,7 +4,7 @@
 
     POST: /login
 
-## /user
+## /users
 
     user can access
     POST: /login
@@ -21,10 +21,12 @@
 
 ## /products
 
+    users can access
+    GET: /  ->getProductsBasedOnLocation
+
     admin can access
     GET: /all -> getAllProducts
     POST: / ->addProduct
-    GET: /  ->productsBasedOnLocation
 
 ## /orders
 
@@ -39,7 +41,7 @@
     GET: /:id ->getOrderById
     GET: / ->getUserOrders
 
-## /warehouse
+## /warehouses
 
     admin can access
     PUT: /:wareHouseId/:productId ->updateProduct

@@ -31,7 +31,7 @@ app.use("/api/users", userRouter);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use("/api/orders", orderRoutes)
-app.use("/api/warehouse", wareHouseRouter)
+app.use("/api/warehouses", wareHouseRouter)
 app.use("/api/notifications", notificationRouter)
 
 app.use("/*", (_, res) => res.status(404).send("404 Not Found"))
