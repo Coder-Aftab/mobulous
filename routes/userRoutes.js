@@ -22,5 +22,4 @@ router.put("/:id/deactivate", [authMiddleware, adminAuth, isIdValid, checkUserEx
 router.delete("/:id", authMiddleware, adminAuth, isIdValid, checkUserExists, userController.deleteUser)
 
 
-
 export default router;

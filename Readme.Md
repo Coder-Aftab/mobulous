@@ -6,7 +6,11 @@
 
 ##### Step 2: Setup  DB url currently configured with atlas
 
-##### Step 3: Run dev/prod script 
+##### Step 3: Install Dependencies
+    yarn install
+
+
+##### Step 4: Run dev/prod script 
     yarn start:dev
 
 # Base Path /api
