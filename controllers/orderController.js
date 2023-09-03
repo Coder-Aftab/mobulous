@@ -1,7 +1,7 @@
 import Order from '../models/order.js';
-import Product from '../models/product.js';
 import WareHouse from '../models/warehouse.js';
 import { CustomError } from '../utils/utils.js';
+import Notification from '../models/notification.js';
 
 const orderController = {
     createOrder: async (req, res) => {
@@ -18,6 +18,18 @@ const orderController = {
             },
         });
 
+        const thresholdStockValue = 4;
+
+        const productsSoonOutOfStock = await WareHouse.find({
+            'products': {
+                $elemMatch: {
+                    'productId': { $in: productIds },
+                    'stock': { $lte: thresholdStockValue }, // Find products with quantity greater than productsSoonOutOfStock
+                },
+            }
+        })
+
+        
         if (productsNotInStock.length > 0) {
             const outOfStockProducts = productsNotInStock.map(warehouse => {
                 return warehouse.products.filter(product => product.stock <= 0);
@@ -25,11 +37,23 @@ const orderController = {
             return res.status(400).json({ error: 'Some products are out of stock', product: outOfStockProducts });
         }
 
+        // Notify the administrators of the products that are going to be out of stock soon
+        if (productsSoonOutOfStock) {
+            const soonOutOfStockProducts = productsSoonOutOfStock.map(warehouse => {
+                return warehouse.products.filter(product => product.stock <= 2);
+            }).flat()
+            soonOutOfStockProducts.forEach(async (product) => {
+                await new Notification({ message: `${product.productId} is going to be out of stock soon`, isAdmin: true }).save();
+            })
+
+        }
+
+
         // Create the order
         const order = new Order({ userId, products: productIds });
         await order.save();
 
-        // Update product quantities and mark them as reserved
+        // Update product quantities 
         await WareHouse.updateMany(
             { 'products.productId': { $in: productIds } },
             { $inc: { 'products.$.stock': -1 } }, // Decrement stock by 1
@@ -58,11 +82,11 @@ const orderController = {
         }
 
         // Notify the user that their order is accepted
-        // const notification = new Notification({
-        //     userId: order.userId,
-        //     message: 'Your order has been accepted',
-        // });
-        // await notification.save();
+        const notification = new Notification({
+            userId: order.userId,
+            message: 'Your order has been accepted',
+        });
+        await notification.save();
 
         res.json({ message: "success", order });
 
@@ -76,11 +100,11 @@ const orderController = {
 
 
         // Notify the user that their order is rejected
-        // const notification = new Notification({
-        //     userId: order.userId,
-        //     message: 'Your order has been rejected',
-        // });
-        // await notification.save();
+        const notification = new Notification({
+            userId: order.userId,
+            message: 'Your order has been rejected',
+        });
+        await notification.save();
 
         res.json({ message: "success", order });
     },

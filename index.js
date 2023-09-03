@@ -9,6 +9,7 @@ import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import wareHouseRouter from "./routes/wareHouseRoutes.js";
+import notificationRouter from "./routes/notificationRoutes.js";
 import DBConnection from './db/index.js';
 // Set up Express app
 
@@ -31,6 +32,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use("/api/orders", orderRoutes)
 app.use("/api/warehouse", wareHouseRouter)
+app.use("/api/notifications", notificationRouter)
 
 app.use("/*", (_, res) => res.status(404).send("404 Not Found"))
 
