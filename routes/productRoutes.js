@@ -9,5 +9,7 @@ import adminAuth from '../middleware/adminAuth.js';
 router.get('/all',[authMiddleware, adminAuth],productController.getAllProducts);
 router.post('/',[authMiddleware, adminAuth],productController.addProduct);
 
+router.get("/",[authMiddleware],productController.filteredProducts)
+
 
 export default router;
