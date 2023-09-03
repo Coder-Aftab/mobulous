@@ -98,6 +98,16 @@ const orderController = {
 
         res.status(200).json({ message: "success", orders });
     },
+    getUserOrders: async (req, res) => {
+
+        const orders = await Order.find({ userId: req.userId })
+
+        if (!orders) {
+            throw new CustomError("No orders for the defined user", 200); // Order not found
+        }
+
+        res.json({ message: "success", orders });
+    }
 };
 
 export default orderController;

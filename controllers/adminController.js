@@ -1,8 +1,6 @@
 import Admin from '../models/admin.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import Order from "../models/order.js";
-import User from '../models/user.js';
 
 const adminController = {
   login: async (req, res) => {
@@ -24,16 +22,6 @@ const adminController = {
     res.json({ message: 'sucess' });
 
   },
-  addWarehouse: async (req, res) => {
-    const { name, location } = req.body;
-    // Add warehouse logic here
-    // Create a new warehouse/hub and save it in the database
-    // ...
-
-    res.status(201).json({ message: 'Warehouse added successfully' });
-  },
-
-  
 };
 
 export default adminController;

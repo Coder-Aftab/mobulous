@@ -17,6 +17,8 @@ router.put("/:id/reject", [authMiddleware, adminAuth, isIdValid], orderControlle
 // normal routes
 router.get("/:id", [authMiddleware, isIdValid], orderController.getOrder);
 
+router.get("/", [authMiddleware], orderController.getUserOrders);
+
 router.post("/", [authMiddleware], orderController.createOrder)
 
 

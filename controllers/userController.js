@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
 import { CustomError } from '../utils/utils.js';
+import mongoose from 'mongoose';
 
 const userController = {
   signup: async (req, res) => {
@@ -15,7 +16,7 @@ const userController = {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     const newUser = new User({
       firstName,
       lastName,
@@ -48,33 +49,53 @@ const userController = {
       return res.status(401).json({ message: 'Account is not active' });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_KEY);
+    const token = jwt.sign({ userId: user._id, isActive: user.isActive }, process.env.JWT_KEY);
 
     res.header("Access-Control-Expose-Headers", "x-auth-token");
     res.header("x-auth-token", token);
 
     res.json({ message: 'success' });
-  }, getUsersProductsAggregation: async (req, res) => {
-    const aggregatedData = await User.aggregate([
+  },
+  getUsersProductsAggregation: async (req, res) => {
+
+
+    //first conver the userId to ObjectId as the pipeline will perform the equality operation on match
+    const userId = new mongoose.Types.ObjectId(req.userId);
+
+    const pipeline = [
+      {
+        $match: {
+          _id: userId,
+        }
+      },
       {
         $lookup: {
-          from: 'products',
+          from: 'orders', // Name of the Order collection
           localField: '_id',
           foreignField: 'userId',
+          as: 'userOrders',
+        },
+      }, 
+      {
+        $lookup: {
+          from: 'products', // Name of the Product collection
+          localField: 'userOrders.products',
+          foreignField: '_id',
           as: 'products',
         },
       },
       {
         $project: {
-          _id: 1,
-          firstname: 1,
-          lastname: 1,
+          firstName: 1,
+          lastName: 1,
           email: 1,
           phoneNumber: 1,
           products: 1,
         },
       },
-    ]);
+    ];
+    
+    const aggregatedData = await User.aggregate(pipeline);
 
     res.status(200).json(aggregatedData);
 
