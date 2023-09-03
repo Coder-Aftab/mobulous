@@ -1,6 +1,13 @@
-Project Setup Guide
+# Project Setup Guide
 
-step 1: run yarn start:prod
+##### Step 1: Setup .env with below environment variables
+    JWT_KEY,PORT,DB_PASSWORD
+    
+
+##### Step 2: Setup  DB url currently configured with atlas
+
+##### Step 3: Run dev/prod script 
+    yarn start:dev
 
 # Base Path /api
 
