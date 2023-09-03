@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "setup":"node setup.js",
     "start:dev": "nodemon index.js",
     "start:prod": "node index.js"
   },
