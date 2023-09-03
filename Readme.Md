@@ -6,18 +6,27 @@
 
 ## /user
 
+    user can access
     POST: /login
     POST: /signup
-    GET: /getAggregations
+    GET: /users-products
+
+    admin can access
+    GET: /all ->getUserList
+    GET: /search ->searchUser
+
+    PUT: /:id/activate ->activateUser
+    PUT: /:id/deactivate ->blockUser
+    PUT: /:id/delete ->deleteUser
 
 ## /products
 
-    GET: /all
-    POST: /add
+    admin can access
+    GET: /all -> getAllProducts
+    POST: / ->addProduct
+    GET: /  ->filterProducts
 
-## order
-
-Base Path /api/orders
+## /orders
 
     only admin can access
     GET: /new ->getNewOrders
@@ -30,6 +39,12 @@ Base Path /api/orders
     GET: /:id ->getOrderById
     GET: / ->getUserOrders
 
-## notifications
+## /warehouse
+
+    admin can access
+    PUT: /:wareHouseId/:productId ->updateProduct
+    PUT: / ->createWarehouse
+
+## /notifications
 
     GET: / -> getNotifications
