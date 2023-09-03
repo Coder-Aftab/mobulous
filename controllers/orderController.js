@@ -29,7 +29,7 @@ const orderController = {
             }
         })
 
-        
+
         if (productsNotInStock.length > 0) {
             const outOfStockProducts = productsNotInStock.map(warehouse => {
                 return warehouse.products.filter(product => product.stock <= 0);
@@ -84,7 +84,7 @@ const orderController = {
         // Notify the user that their order is accepted
         const notification = new Notification({
             userId: order.userId,
-            message: 'Your order has been accepted',
+            message: `Your order ${order.id} has been accepted`,
         });
         await notification.save();
 
@@ -102,7 +102,7 @@ const orderController = {
         // Notify the user that their order is rejected
         const notification = new Notification({
             userId: order.userId,
-            message: 'Your order has been rejected',
+            message: `Your order ${order.id} has been rejected`,
         });
         await notification.save();
 
